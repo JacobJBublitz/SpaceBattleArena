@@ -4,11 +4,7 @@ pipeline {
 	stages {
 		stage('Build') {
 			steps {
-				if (isUnix()) {
-					sh './gradlew assemble'
-				} else {
-					bat 'gradlew.bat assemble'
-				}
+				sh './gradlew assemble'
 				archiveArtifacts artifacts: 'build/distributions/*.zip'
 			}
 		}
