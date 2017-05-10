@@ -1,8 +1,10 @@
 group 'com.github.kaboomboom3'
 version '0.1'
 
+apply plugin: 'application'
 apply plugin: 'java'
 
+mainClassName = 'com.github.kaboomboom3.spacebattlearena.Ship'
 sourceCompatibility = 1.8
 
 repositories {
