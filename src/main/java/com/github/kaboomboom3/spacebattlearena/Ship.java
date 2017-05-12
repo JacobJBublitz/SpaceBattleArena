@@ -40,6 +40,13 @@ public class Ship extends BasicSpaceship {
 
 	@Override
 	public ShipCommand getNextCommand(BasicEnvironment basicEnvironment) {
+		{
+			ShipCommand repairCommand = repairShip(basicEnvironment.getShipStatus());
+			if (repairCommand != null) {
+				return repairCommand;
+			}
+		}
+
 		//Start by using the radar to collect data on objects around us
         ObjectStatus ourShip = basicEnvironment.getShipStatus();
         RadarResults radarResults = basicEnvironment.getRadar();
@@ -59,14 +66,19 @@ public class Ship extends BasicSpaceship {
             else {
                 ObjectStatus closestEnemy = getClosestObject(ourShip, nearbyEnemyShips);
 
-                System.out.println(getDistanceBetween(ourShip, closestEnemy.getPosition()));
-                if(getDistanceBetween(ourShip, closestEnemy.getPosition()) <= OPTIMAL_FIRING_RANGE) {
-                    return fireAtWill(ourShip,closestEnemy.getPosition());
+                ShipCommand attackCommand = AttackShipCommand.attackShip(ourShip, closestEnemy);
+                if (attackCommand != null) {
+                	return attackCommand;
                 }
+
+//                System.out.println(getDistanceBetween(ourShip, closestEnemy.getPosition()));
+//                if(getDistanceBetween(ourShip, closestEnemy.getPosition()) <= OPTIMAL_FIRING_RANGE) {
+//                    return fireAtWill(ourShip,closestEnemy);
+//                }
             }
         }
 
-        return new IdleCommand(0.5);
+        return new IdleCommand(0.1);
 	}
 
     //</editor-fold>
@@ -106,20 +118,25 @@ public class Ship extends BasicSpaceship {
     /**
      * Fires torpedo's at enemy ships.
      * @param ourShip Our ship.
-     * @param enemyShipPoint The enemy ship to attack.
+     * @param enemyShip The enemy ship to attack.
      * @return Returns a new Fire Torpedo Command.
      */
-    private ShipCommand fireAtWill(ObjectStatus ourShip, Point enemyShipPoint) {
+    private ShipCommand fireAtWill(ObjectStatus ourShip, ObjectStatus enemyShip) {
+
+    	// Position the enemy will be in when the torpedo hits it
+    	Point enemyFuturePos = new Point(enemyShip.getPosition().getX() - enemyShip.getSpeed() * Math.cos(Math.toRadians(enemyShip.getMovementDirection())),
+			    enemyShip.getPosition().getY() - enemyShip.getSpeed() * Math.sin(Math.toRadians(enemyShip.getMovementDirection())));
 
         //Only fire if we are facing the enemy
-        if(isFacingEnemy(ourShip, enemyShipPoint)) {
+        if(isFacingEnemy(ourShip, enemyFuturePos)) {
             System.out.println("FIRING!!");
             return new FireTorpedoCommand('F');
         }
         else
         {
             System.out.println("Unreachable. Will rotate!");
-            return rotateTowards(ourShip,enemyShipPoint);
+
+            return rotateTowards(ourShip, enemyFuturePos);
 
         }
     }
