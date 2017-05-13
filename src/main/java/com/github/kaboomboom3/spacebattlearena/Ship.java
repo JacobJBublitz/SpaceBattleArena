@@ -7,6 +7,10 @@ import ihs.apcs.spacebattle.commands.*;
 import java.awt.*;
 import java.util.List;
 
+/**
+ * The actual ship that we will be flying
+ * TODO: We need to find out why getting an enemies speed = 0 from our Ship's perspective!
+ */
 public class Ship extends BasicSpaceship {
 
 
@@ -21,8 +25,6 @@ public class Ship extends BasicSpaceship {
     private List<ObjectStatus> nearbyAsteroids;
     private List<ObjectStatus> nearbyPlanets;
 
-    private Point origin;
-
     //</editor-fold>
 
 	public static void main(String[] args) {
@@ -34,7 +36,6 @@ public class Ship extends BasicSpaceship {
 
     @Override
 	public RegistrationData registerShip(int numImages, int worldWidth, int worldHeight) {
-        origin = null;
 		return new RegistrationData("The normandy", new Color(0.3f, 0.1f, 0.5f), 10);
 	}
 
@@ -52,22 +53,20 @@ public class Ship extends BasicSpaceship {
         RadarResults radarResults = basicEnvironment.getRadar();
 
         if(radarResults == null) {
-            return new RadarCommand(5);
+            return new RadarCommand(4);
         }
         else {
+
             //Filter the radar entries into organized sets
             nearbyEnemyShips = radarResults.getByType("Ship");
             nearbyAsteroids = radarResults.getByType("Asteroid");
             nearbyPlanets = radarResults.getByType("Planet");
 
-            if(nearbyEnemyShips.size() == 0) {
-                System.out.println("No enemies");
-            }
-            else {
+            if(nearbyEnemyShips.size() != 0 ) {
                 ObjectStatus closestEnemy = getClosestObject(ourShip, nearbyEnemyShips);
 
-                //ShipCommand attackCommand = AttackShipCommand.attackShip(ourShip, closestEnemy);
-                ShipCommand attackCommand = OtherAttackShipCommand.attackShip(ourShip, closestEnemy);
+                ShipCommand attackCommand = AttackShipCommand.attackShip(ourShip, closestEnemy);
+                //ShipCommand attackCommand = OtherAttackShipCommand.attackShip(ourShip, closestEnemy);
                 if (attackCommand != null) {
                 	return attackCommand;
                 }
@@ -110,32 +109,6 @@ public class Ship extends BasicSpaceship {
     private ShipCommand rotateTowards(ObjectStatus ourShip, Point point) {
         System.out.println("Rotating...");
         return new RotateCommand(getAngleBetween(ourShip, point) + ROTATION_BIAS);
-    }
-
-    /**
-     * Fires torpedo's at enemy ships.
-     * @param ourShip Our ship.
-     * @param enemyShip The enemy ship to attack.
-     * @return Returns a new Fire Torpedo Command.
-     */
-    private ShipCommand fireAtWill(ObjectStatus ourShip, ObjectStatus enemyShip) {
-
-    	// Position the enemy will be in when the torpedo hits it
-    	Point enemyFuturePos = new Point(enemyShip.getPosition().getX() - enemyShip.getSpeed() * Math.cos(Math.toRadians(enemyShip.getMovementDirection())),
-			    enemyShip.getPosition().getY() - enemyShip.getSpeed() * Math.sin(Math.toRadians(enemyShip.getMovementDirection())));
-
-        //Only fire if we are facing the enemy
-        if(isFacingEnemy(ourShip, enemyFuturePos)) {
-            System.out.println("FIRING!!");
-            return new FireTorpedoCommand('F');
-        }
-        else
-        {
-            System.out.println("Unreachable. Will rotate!");
-
-            return rotateTowards(ourShip, enemyFuturePos);
-
-        }
     }
 
     //</editor-fold>
@@ -199,7 +172,6 @@ public class Ship extends BasicSpaceship {
 
         return closestObject;
     }
-
 
     //</editor-fold>
 
