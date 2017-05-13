@@ -23,6 +23,6 @@ public class TestShip extends BasicSpaceship {
 
 	@Override
 	public ShipCommand getNextCommand(BasicEnvironment basicEnvironment) {
-		return new ThrustCommand('B', 1, 1);
+		return new ThrustCommand('B', 0.5, 1);
 	}
 }

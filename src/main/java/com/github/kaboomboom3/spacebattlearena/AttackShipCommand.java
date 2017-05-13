@@ -30,7 +30,7 @@ public class AttackShipCommand {
 		if (Math.abs(relativeAngle) - ANGLE_TOLERANCE < 0) {
 			return new FireTorpedoCommand('F');
 		} else {
-			return new RotateCommand(relativeAngle % 90);
+			return new RotateCommand(relativeAngle);
 		}
 	}
 }

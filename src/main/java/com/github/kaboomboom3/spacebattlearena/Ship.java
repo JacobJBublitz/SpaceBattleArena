@@ -66,15 +66,12 @@ public class Ship extends BasicSpaceship {
             else {
                 ObjectStatus closestEnemy = getClosestObject(ourShip, nearbyEnemyShips);
 
-                ShipCommand attackCommand = AttackShipCommand.attackShip(ourShip, closestEnemy);
+                //ShipCommand attackCommand = AttackShipCommand.attackShip(ourShip, closestEnemy);
+                ShipCommand attackCommand = OtherAttackShipCommand.attackShip(ourShip, closestEnemy);
                 if (attackCommand != null) {
                 	return attackCommand;
                 }
 
-//                System.out.println(getDistanceBetween(ourShip, closestEnemy.getPosition()));
-//                if(getDistanceBetween(ourShip, closestEnemy.getPosition()) <= OPTIMAL_FIRING_RANGE) {
-//                    return fireAtWill(ourShip,closestEnemy);
-//                }
             }
         }
 
