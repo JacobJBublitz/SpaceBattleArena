@@ -65,8 +65,8 @@ public class Ship extends BasicSpaceship {
             if(nearbyEnemyShips.size() != 0 ) {
                 ObjectStatus closestEnemy = getClosestObject(ourShip, nearbyEnemyShips);
 
-                ShipCommand attackCommand = AttackShipCommand.attackShip(ourShip, closestEnemy);
-                //ShipCommand attackCommand = OtherAttackShipCommand.attackShip(ourShip, closestEnemy);
+                //ShipCommand attackCommand = AttackShipCommand.attackShip(ourShip, closestEnemy);
+                ShipCommand attackCommand = OtherAttackShipCommand.attackShip(ourShip, closestEnemy);
                 if (attackCommand != null) {
                 	return attackCommand;
                 }

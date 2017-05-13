@@ -30,6 +30,8 @@ public class TestShip extends BasicSpaceship {
 	public ShipCommand getNextCommand(BasicEnvironment basicEnvironment) {
 
 		System.out.println("Speed is " + basicEnvironment.getShipStatus().getSpeed());
+		System.out.println("Direction is " + basicEnvironment.getShipStatus().getMovementDirection());
+
 		if(count != 5) {
 			count ++;
 			return new ThrustCommand('B', 1, 1);
