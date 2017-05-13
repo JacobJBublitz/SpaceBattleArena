@@ -3,6 +3,7 @@ package com.github.kaboomboom3.spacebattlearena;
 import ihs.apcs.spacebattle.ObjectStatus;
 import ihs.apcs.spacebattle.Point;
 import ihs.apcs.spacebattle.commands.*;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 
 /**
@@ -18,21 +19,29 @@ public class OtherAttackShipCommand {
 
     public static Point getFuturePosition(ObjectStatus ourShip, ObjectStatus enemyShip) {
 
-        Vector2D distanceApartVector = Vector2D.subtract(ourShip.getPosition(), enemyShip.getPosition());
+//        Vector2D distanceApartVector = Vector2D.subtract(ourShip.getPosition(), enemyShip.getPosition());
+//
+//        Vector2D enemyShipVelocityVector = new Vector2D(ENEMY_SHIP_TEST_SPEED * Math.cos(ENEMY_SHIP_TEST_ANGLE),
+//                ENEMY_SHIP_TEST_SPEED * Math.sin(ENEMY_SHIP_TEST_ANGLE));
+//
+//        double theta = Vector2D.angleBetween(distanceApartVector, enemyShipVelocityVector);
+//
+//        double aValue = Math.pow(ENEMY_SHIP_TEST_SPEED, 2) - Math.pow(TORPEDO_SPEED, 2);
+//        double bValue = -2 * Math.cos(theta) * distanceApartVector.getMagnitude() * ENEMY_SHIP_TEST_SPEED;
+//        double cValue = Math.pow(distanceApartVector.getMagnitude(), 2);
+//
+//        double discriminant = Math.sqrt(Math.pow(bValue, 2) - (4 * aValue * cValue));
+//        double time = -(bValue + discriminant) / (2*aValue);
+//        return Vector2D.add(enemyShip.getPosition(), Vector2D.scalarMultiply(enemyShipVelocityVector, time).toPoint()).toPoint();
 
-        Vector2D enemyShipVelocityVector = new Vector2D(ENEMY_SHIP_TEST_SPEED * Math.cos(ENEMY_SHIP_TEST_ANGLE),
-                ENEMY_SHIP_TEST_SPEED * Math.sin(ENEMY_SHIP_TEST_ANGLE));
+        throw new NotImplementedException();
 
-        double theta = Vector2D.angleBetween(distanceApartVector, enemyShipVelocityVector);
+    }
 
-        double aValue = Math.pow(ENEMY_SHIP_TEST_SPEED, 2) - Math.pow(TORPEDO_SPEED, 2);
-        double bValue = -2 * Math.cos(theta) * distanceApartVector.getMagnitude() * ENEMY_SHIP_TEST_SPEED;
-        double cValue = Math.pow(distanceApartVector.getMagnitude(), 2);
-
-        double discriminant = Math.sqrt(Math.pow(bValue, 2) - (4 * aValue * cValue));
-        double time = -(bValue + discriminant) / (2*aValue);
-
-        return Vector2D.add(enemyShip.getPosition(), Vector2D.scalarMultiply(enemyShipVelocityVector, time).toPoint()).toPoint();
+    public static Vector2D findInterceptVector(ObjectStatus ourShip, ObjectStatus enemyShip) {
+        Vector2D dirToTarget = Vector2D.normalize(new Vector2D(ourShip.getPosition(), enemyShip.getPosition()));
+        System.out.println(dirToTarget.toString());
+        return null;
     }
 
     /**

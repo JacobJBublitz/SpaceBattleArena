@@ -1,7 +1,4 @@
-import ihs.apcs.spacebattle.BasicEnvironment;
-import ihs.apcs.spacebattle.BasicSpaceship;
-import ihs.apcs.spacebattle.RegistrationData;
-import ihs.apcs.spacebattle.TextClient;
+import ihs.apcs.spacebattle.*;
 import ihs.apcs.spacebattle.commands.IdleCommand;
 import ihs.apcs.spacebattle.commands.RotateCommand;
 import ihs.apcs.spacebattle.commands.ShipCommand;
@@ -29,8 +26,7 @@ public class TestShip extends BasicSpaceship {
 	@Override
 	public ShipCommand getNextCommand(BasicEnvironment basicEnvironment) {
 
-		System.out.println("Speed is " + basicEnvironment.getShipStatus().getSpeed());
-		System.out.println("Direction is " + basicEnvironment.getShipStatus().getMovementDirection());
+		logInfo(basicEnvironment.getShipStatus());
 
 		if(count != 5) {
 			count ++;
@@ -38,5 +34,12 @@ public class TestShip extends BasicSpaceship {
 		}
 		else
 			return new RotateCommand(5);
+	}
+
+	private void logInfo(ObjectStatus ourShip) {
+		System.out.println("Speed is " + ourShip.getSpeed());
+		System.out.println("Direction is " + ourShip.getMovementDirection());
+		System.out.println("-----------------------END--------------------------------");
+		System.out.println();
 	}
 }
