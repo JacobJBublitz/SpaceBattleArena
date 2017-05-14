@@ -10,8 +10,8 @@ import ihs.apcs.spacebattle.Point;
 public class Vector2D {
 
     //Vector components
-    protected double dX;
-    protected double dY;
+    public double dX;
+    public double dY;
 
 
     //<editor-fold desc="Constructors">
@@ -113,7 +113,7 @@ public class Vector2D {
      * @param v A vector.
      * @return Returns a new vector who's magnitude is equal to 1.
      */
-    public static Vector2D normalize(Vector2D v) {
+    public static Vector2D toUnitVector(Vector2D v) {
         return new Vector2D(v.dX / v.magnitude(), v.dY / v.magnitude());
     }
 
@@ -145,6 +145,10 @@ public class Vector2D {
      */
     public static Vector2D scale(Vector2D v1, double scalar) {
         return new Vector2D(scalar * v1.dX, scalar * v1.dY);
+    }
+
+    public static Vector2D copy(Vector2D v) {
+        return new Vector2D(v.dX, v.dY);
     }
 
     //</editor-fold>

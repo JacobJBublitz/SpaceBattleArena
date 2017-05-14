@@ -53,7 +53,7 @@ public class Ship extends BasicSpaceship {
         RadarResults radarResults = basicEnvironment.getRadar();
 
         if(radarResults == null) {
-            return new RadarCommand(4);
+            return new RadarCommand(5);
         }
         else {
 
@@ -65,18 +65,14 @@ public class Ship extends BasicSpaceship {
             if(nearbyEnemyShips.size() != 0 ) {
 
                 ObjectStatus closestEnemy = getClosestObject(ourShip, nearbyEnemyShips);
-                OtherAttackShipCommand.findInterceptVector(ourShip, closestEnemy);
-                System.out.println(closestEnemy);
-                System.out.println("----------------------------END----------------------------");
-
-
+                OtherAttackShipCommand.findInterceptVector(ourShip,closestEnemy);
                 //<editor-fold desc="Cannot use until you find out why speed and direction is 0 for enemy">
 
                 //ShipCommand attackCommand = AttackShipCommand.attackShip(ourShip, closestEnemy);
-                //ShipCommand attackCommand = OtherAttackShipCommand.attackShip(ourShip, closestEnemy);
-                //if (attackCommand != null) {
-                //	return attackCommand;
-                //}
+                ShipCommand attackCommand = OtherAttackShipCommand.attackShip(ourShip, closestEnemy);
+                if (attackCommand != null) {
+                	return attackCommand;
+                }
 
                 //</editor-fold>
             }
