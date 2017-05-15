@@ -43,6 +43,16 @@ public class Vector2D {
         this.dY = head.getY() - tail.getY();
     }
 
+    /**
+     * Another constructor that converts a point to a vector, assuming that you are creating a vector
+     * such that the iniial point is at (0,0).
+     * @param p1
+     */
+    public Vector2D (Point p1) {
+        this.dX = p1.getX();
+        this.dY = p1.getY();
+    }
+
     //</editor-fold>
 
 
