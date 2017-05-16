@@ -13,6 +13,9 @@ import java.util.List;
  */
 public class Ship extends BasicSpaceship {
 
+    public static final boolean FIND_THE_MIDDLE = true;
+
+    private static int worldWidth = 0, worldHeight = 0;
 
     //<editor-fold desc="Ship variables">
 
@@ -28,19 +31,30 @@ public class Ship extends BasicSpaceship {
     //</editor-fold>
 
 	public static void main(String[] args) {
-		TextClient.run("localhost", new Ship());
+		TextClient.run("10.51.4.70", new Ship());
 	}
 
+	public static int getWorldWidth() {
+        return worldWidth;
+    }
+
+    public static int getWorldHeight() {
+        return worldHeight;
+    }
 
     //<editor-fold desc="Main ship operations">
 
     @Override
 	public RegistrationData registerShip(int numImages, int worldWidth, int worldHeight) {
-		return new RegistrationData("The normandy", new Color(0.3f, 0.1f, 0.5f), 10);
+        Ship.worldWidth = worldWidth;
+        Ship.worldHeight = worldHeight;
+
+		return new RegistrationData("The Normandy", new Color(1.0f, 1.0f, 1.0f), 10);
 	}
 
 	@Override
 	public ShipCommand getNextCommand(BasicEnvironment basicEnvironment) {
+
 		{
 			ShipCommand repairCommand = repairShip(basicEnvironment.getShipStatus());
 			if (repairCommand != null) {
@@ -48,33 +62,32 @@ public class Ship extends BasicSpaceship {
 			}
 		}
 
-		//Start by using the radar to collect data on objects around us
-        ObjectStatus ourShip = basicEnvironment.getShipStatus();
-        RadarResults radarResults = basicEnvironment.getRadar();
+		if (FIND_THE_MIDDLE) {
+		   return FindTheMiddleCommand.getNextCommand(basicEnvironment);
+        } else {
+            //Start by using the radar to collect data on objects around us
+            ObjectStatus ourShip = basicEnvironment.getShipStatus();
+            RadarResults radarResults = basicEnvironment.getRadar();
 
-        if(radarResults == null) {
-            return new RadarCommand(5);
-        }
-        else {
+            if (radarResults == null) {
+                return new RadarCommand(5);
+            } else {
 
-            //Filter the radar entries into organized sets
-            nearbyEnemyShips = radarResults.getByType("Ship");
-            nearbyAsteroids = radarResults.getByType("Asteroid");
-            nearbyPlanets = radarResults.getByType("Planet");
+                //Filter the radar entries into organized sets
+                nearbyEnemyShips = radarResults.getByType("Ship");
+                nearbyAsteroids = radarResults.getByType("Asteroid");
+                nearbyPlanets = radarResults.getByType("Planet");
 
-            if(nearbyEnemyShips.size() != 0 ) {
+                if (nearbyEnemyShips.size() != 0) {
 
-                ObjectStatus closestEnemy = getClosestObject(ourShip, nearbyEnemyShips);
-                OtherAttackShipCommand.findInterceptVector(ourShip,closestEnemy);
-                //<editor-fold desc="Cannot use until you find out why speed and direction is 0 for enemy">
+                    ObjectStatus closestEnemy = getClosestObject(ourShip, nearbyEnemyShips);
 
-                //ShipCommand attackCommand = AttackShipCommand.attackShip(ourShip, closestEnemy);
-                ShipCommand attackCommand = OtherAttackShipCommand.attackShip(ourShip, closestEnemy);
-                if (attackCommand != null) {
-                	return attackCommand;
+                    ShipCommand attackCommand = AttackShipCommand.attackShip(ourShip, closestEnemy);
+                    //ShipCommand attackCommand = OtherAttackShipCommand.attackShip(ourShip, closestEnemy);
+                    if (attackCommand != null) {
+                        return attackCommand;
+                    }
                 }
-
-                //</editor-fold>
             }
         }
 
@@ -103,16 +116,6 @@ public class Ship extends BasicSpaceship {
         else {
             return  null;
         }
-    }
-
-    /**
-     * Forces our ship to rotate towards a point
-     * @param point A point to rotate towards.
-     * @return Returns a new Rotate Command.
-     */
-    private ShipCommand rotateTowards(ObjectStatus ourShip, Point point) {
-        System.out.println("Rotating...");
-        return new RotateCommand(getAngleBetween(ourShip, point) + ROTATION_BIAS);
     }
 
     //</editor-fold>

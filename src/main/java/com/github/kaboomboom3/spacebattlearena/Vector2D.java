@@ -25,6 +25,7 @@ public class Vector2D {
 
     /**
      * Alternate Vector2D constructor that will create a vector based off the specified components.
+     *
      * @param xComponent The X component of this vector.
      * @param yComponent The Y component of this vector
      */
@@ -35,10 +36,11 @@ public class Vector2D {
 
     /**
      * Another constructor that creates a vector using the Head Minus Tail rule of two points.
+     *
      * @param tail The tail point.
      * @param head The head point.
      */
-    public Vector2D (Point tail, Point head)  {
+    public Vector2D(Point tail, Point head) {
         this.dX = head.getX() - tail.getX();
         this.dY = head.getY() - tail.getY();
     }
@@ -46,9 +48,10 @@ public class Vector2D {
     /**
      * Another constructor that converts a point to a vector, assuming that you are creating a vector
      * such that the iniial point is at (0,0).
+     *
      * @param p1
      */
-    public Vector2D (Point p1) {
+    public Vector2D(Point p1) {
         this.dX = p1.getX();
         this.dY = p1.getY();
     }
@@ -60,6 +63,7 @@ public class Vector2D {
 
     /**
      * Get's the magnitude of this vector
+     *
      * @return Returns a single number representation of the magnitude of this vector.
      */
     public double magnitude() {
@@ -68,6 +72,7 @@ public class Vector2D {
 
     /**
      * Get the angle that the vector is facing IN RADIANS.
+     *
      * @return A number representing the angle that this vector is facing.
      */
     public double getRadianAngle() {
@@ -76,6 +81,7 @@ public class Vector2D {
 
     /**
      * Convert's a Vector2D to a Point, assuming the tail is at (0,0).
+     *
      * @return A point from this vector.
      */
     public Point toPoint() {
@@ -89,6 +95,7 @@ public class Vector2D {
 
     /**
      * Gets the angle between two vectors.
+     *
      * @param v1 The first vector.
      * @param v2 The second vector.
      * @return Returns the angle between the two vectors IN RADIANS.
@@ -99,6 +106,7 @@ public class Vector2D {
 
     /**
      * Gets the dot product between two vectors.
+     *
      * @param v1 The first vector.
      * @param v2 The second vector.
      * @return Returns a single number which is the dot product of the two vectors.
@@ -109,6 +117,7 @@ public class Vector2D {
 
     /**
      * Gets the vector projection of U onto V
+     *
      * @param u The U vector (usually NOT IN the subscript for projection notation).
      * @param v The V vector (usually IN the subscript for projection notation).
      * @return Return's a new vector that is the projection of U onto V.
@@ -120,6 +129,7 @@ public class Vector2D {
 
     /**
      * Normalizes a vector.
+     *
      * @param v A vector.
      * @return Returns a new vector who's magnitude is equal to 1.
      */
@@ -129,16 +139,18 @@ public class Vector2D {
 
     /**
      * Adds two vectors.
+     *
      * @param v1 The first vector.
      * @param v2 The second vector.
      * @return A new vector that is the sum of two vectors inputted.
      */
-    public static Vector2D add(Vector2D v1, Vector2D v2)  {
+    public static Vector2D add(Vector2D v1, Vector2D v2) {
         return new Vector2D(v1.dX + v2.dX, v1.dY + v2.dY);
     }
 
     /**
      * Subtracts two vectors.
+     *
      * @param v1 The first vector.
      * @param v2 The second vector.
      * @return A new vector that is the difference of two vectors inputted.
@@ -149,7 +161,8 @@ public class Vector2D {
 
     /**
      * Scale's a vector by a scalar
-     * @param v1 A vector to be scaled.
+     *
+     * @param v1     A vector to be scaled.
      * @param scalar The scalar multiplier to scale the vector by.
      * @return Returns a new vector, whos components have been scaled by the scalar inputted.
      */
@@ -165,6 +178,7 @@ public class Vector2D {
 
     /**
      * Output's a string representation of this vector.
+     *
      * @return A string representation in the form of <dX, dY>.
      */
     @Override

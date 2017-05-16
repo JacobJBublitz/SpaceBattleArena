@@ -57,12 +57,12 @@ public class OtherAttackShipCommand {
         //We will deal with it by ignoring it for now, but consider the relative origin.
         Vector2D displacement = new Vector2D(ship.getPosition(), target.getPosition());
 
-        Vector2D targetVelocity = new Vector2D(target.getSpeed() * Math.cos(target.getMovementDirection()),
-                target.getSpeed() * Math.cos(target.getMovementDirection()));
+        Vector2D targetVelocity = new Vector2D(target.getSpeed() * Math.cos(Math.toRadians(target.getMovementDirection())),
+                target.getSpeed() * Math.sin(Math.toRadians(target.getMovementDirection())));
 
         //FIX TO RELATIVE ORIGIN
-        Vector2D targetDisplacement = Vector2D.add(new Vector2D(target.getPosition()),
-                Vector2D.scale(targetVelocity, calculateTime(ship, target)));
+        Vector2D targetDisplacement = new Vector2D(target.getPosition(),
+                Vector2D.scale(targetVelocity, calculateTime(ship, target)).toPoint());
 
         //<editor-fold desc="End result notes">
         /**
@@ -72,30 +72,21 @@ public class OtherAttackShipCommand {
          *          Displacement of ship to target + Displacement of ship's initial position to final position.
          */
         //</editor-fold>
-        return  Vector2D.add(displacement, targetDisplacement).toPoint();
+        return Vector2D.add(displacement, targetDisplacement).toPoint();
 
     }
 
+    //NEEDS FIXING
     public static double calculateTime(ObjectStatus ship, ObjectStatus target) {
+        Vector2D targetInitialPosition = new Vector2D(target.getPosition());
+        Vector2D torpedoVelocity = null;
+        Vector2D targetVelocity = new Vector2D(target.getSpeed() * Math.cos(Math.toRadians(target.getMovementDirection())),
+                target.getSpeed() * Math.sin(Math.toRadians(target.getMovementDirection())));
 
-        //FIX TO RELATIVE ORIGIN
-        Vector2D targetInitalPosition = new Vector2D(new Point(0,0) , target.getPosition());
-
-        Vector2D torpedoVelocity = new Vector2D(TORPEDO_SPEED * Math.cos(ship.getOrientation()),
-                TORPEDO_SPEED * Math.sin(ship.getOrientation()));
-
-        Vector2D targetVelocity = new Vector2D(target.getSpeed() * Math.cos(target.getMovementDirection()),
-                target.getSpeed() * Math.cos(target.getMovementDirection()));
-
-        Vector2D denominator = Vector2D.subtract(torpedoVelocity, targetVelocity);
-
-        Vector2D flippedDenominator = new Vector2D(1.0 / denominator.dX, 1.0 / denominator.dY);
-
-        return Vector2D.dotProduct(targetInitalPosition, flippedDenominator);
-
+        return 0;
     }
 
-    public ShipCommand attackShip(ObjectStatus ship, ObjectStatus target) {
+    public static ShipCommand attackShip(ObjectStatus ship, ObjectStatus target) {
         Point intercept = finalPosition(ship, target);
 
         int relativeAngle = ship.getPosition().getAngleTo(intercept) - ship.getOrientation();
