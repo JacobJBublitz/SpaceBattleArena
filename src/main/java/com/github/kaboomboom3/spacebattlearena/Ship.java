@@ -13,34 +13,37 @@ import java.util.List;
  */
 public class Ship extends BasicSpaceship {
 
+    //World properties
+    private static int worldWidth = 0;
+    private static int worldHeight = 0;
+
+
+    //<editor-fold desc="Gamemodes">
+
     public static final boolean FIND_THE_MIDDLE = true;
-
-    private static int worldWidth = 0, worldHeight = 0;
-
-    //<editor-fold desc="Ship variables">
-
-    private static final int MIN_ANGLE_BUFFER = -7;
-    private static final int MAX_ANGLE_BUFFER = 7;
-    private static final int ROTATION_BIAS = 0;
-    private static final int OPTIMAL_FIRING_RANGE = 300;
-
-    private List<ObjectStatus> nearbyEnemyShips;
-    private List<ObjectStatus> nearbyAsteroids;
-    private List<ObjectStatus> nearbyPlanets;
+    public static final boolean DEATHMATCH = false;
 
     //</editor-fold>
 
-	public static void main(String[] args) {
+
+    public static void main(String[] args) {
 		TextClient.run("10.51.4.70", new Ship());
 	}
 
-	public static int getWorldWidth() {
+
+    //<editor-fold desc="Public field accessors">
+
+    public static int getWorldWidth() {
         return worldWidth;
     }
 
     public static int getWorldHeight() {
         return worldHeight;
     }
+
+    //</editor-fold>
+
+
 
     //<editor-fold desc="Main ship operations">
 
@@ -64,40 +67,19 @@ public class Ship extends BasicSpaceship {
 
 		if (FIND_THE_MIDDLE) {
 		   return FindTheMiddleCommand.getNextCommand(basicEnvironment);
-        } else {
-            //Start by using the radar to collect data on objects around us
-            ObjectStatus ourShip = basicEnvironment.getShipStatus();
-            RadarResults radarResults = basicEnvironment.getRadar();
-
-            if (radarResults == null) {
-                return new RadarCommand(5);
-            } else {
-
-                //Filter the radar entries into organized sets
-                nearbyEnemyShips = radarResults.getByType("Ship");
-                nearbyAsteroids = radarResults.getByType("Asteroid");
-                nearbyPlanets = radarResults.getByType("Planet");
-
-                if (nearbyEnemyShips.size() != 0) {
-
-                    ObjectStatus closestEnemy = getClosestObject(ourShip, nearbyEnemyShips);
-
-                    ShipCommand attackCommand = AttackShipCommand.attackShip(ourShip, closestEnemy);
-                    //ShipCommand attackCommand = OtherAttackShipCommand.attackShip(ourShip, closestEnemy);
-                    if (attackCommand != null) {
-                        return attackCommand;
-                    }
-                }
-            }
+        }
+        else if (DEATHMATCH) {
+            return DeathmatchCommand.attackShip(basicEnvironment, true);
         }
 
         return new IdleCommand(0.1);
 	}
 
+
     //</editor-fold>
 
 
-    //<editor-fold desc="Ship commands">
+    //<editor-fold desc="Global ship commands">
 
     /**
      * Repair's the ship if the health is less than 10%.
@@ -121,68 +103,6 @@ public class Ship extends BasicSpaceship {
     //</editor-fold>
 
 
-    //<editor-fold desc="Navigation assistance">
-    
-    /**
-     * Get's the angle between the head of our ship and a point
-     * @param ourShip Our ship.
-     * @param point A point to rotate towards.
-     * @return Returns the angle between our ship and the point.
-     */
-    private int getAngleBetween(ObjectStatus ourShip, Point point) {
-        return ourShip.getPosition().getAngleTo(point) - ourShip.getOrientation();
-    }
-
-    /**
-     * Checks if our ship is within the optimal angle to fire.
-     * @param ourShip The enemy ship to be attacked.
-     * @param enemyShipPoint Point of the ourShip to access our ship's orientation.
-     * @return True if our ship is within the optimal angle. False if it is out of range.
-     */
-    public boolean isFacingEnemy(ObjectStatus ourShip, Point enemyShipPoint) {
-        int angleBetween = getAngleBetween(ourShip, enemyShipPoint);
-        return  MIN_ANGLE_BUFFER <= angleBetween && angleBetween <= MAX_ANGLE_BUFFER;
-    }
-
-    /**
-     * Gets the distance between two objects.
-     * @param ourShip Some object to get the position of.
-     * @param otherObject Some other object to get the position of.
-     * @return Returns the distance between the two objects.
-     */
-    private double getDistanceBetween(ObjectStatus ourShip, Point otherObject) {
-        return ourShip.getPosition().getDistanceTo(otherObject);
-    }
-
-    /**
-     * Return's the closest object within the ship's vicinity.
-     * @param ship Our ship.
-     * @param radarEntries The radar results.
-     * @return Returns the closest object to our ship.
-     */
-    private ObjectStatus getClosestObject(ObjectStatus ship, List<ObjectStatus> enemyShipList) {
-
-        if(enemyShipList.size() == 0) {
-            return null;
-        }
-
-        ObjectStatus closestObject = enemyShipList.get(0);
-
-        for (ObjectStatus currentObject : enemyShipList) {
-            double lastDistance = getDistanceBetween(ship, closestObject.getPosition());
-            double currentObjectsDistance = getDistanceBetween(ship,currentObject.getPosition());
-
-            if(lastDistance < currentObjectsDistance) {
-                closestObject = currentObject;
-            }
-        }
-
-        return closestObject;
-    }
-
-    //</editor-fold>
-
-
     //<editor-fold desc="Information logging">
 
     /**
@@ -199,7 +119,6 @@ public class Ship extends BasicSpaceship {
     /**
      * Reports information about a single, certain object.
      * Used for testing.
-     * @param entry Object to observe.
      */
     private void testInformation(ObjectStatus ourShip, Point point) {
         double angle = ourShip.getPosition().getAngleTo(point);

@@ -1,15 +1,12 @@
 package com.github.kaboomboom3.spacebattlearena;
 
-import ihs.apcs.spacebattle.BasicEnvironment;
-import ihs.apcs.spacebattle.ObjectStatus;
+import ihs.apcs.spacebattle.*;
 import ihs.apcs.spacebattle.Point;
-import ihs.apcs.spacebattle.commands.BrakeCommand;
-import ihs.apcs.spacebattle.commands.RotateCommand;
-import ihs.apcs.spacebattle.commands.ShipCommand;
-import ihs.apcs.spacebattle.commands.ThrustCommand;
+import ihs.apcs.spacebattle.commands.*;
 
 /**
- * Created by 246673 on 5/16/2017.
+ * Created by Kaboomboom3 on 5/16/2017.
+ * This is the class used for find the middle.
  */
 public class FindTheMiddleCommand {
 
@@ -17,6 +14,7 @@ public class FindTheMiddleCommand {
 
     public static ShipCommand getNextCommand(BasicEnvironment environment) {
         ObjectStatus ourShip = environment.getShipStatus();
+
         Point middlePos = new Point(Ship.getWorldWidth() / 2.0, Ship.getWorldHeight() / 2.0);
 
         int angleToMiddle = ourShip.getPosition().getAngleTo(middlePos);
