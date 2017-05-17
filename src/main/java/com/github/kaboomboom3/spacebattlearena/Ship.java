@@ -17,13 +17,8 @@ public class Ship extends BasicSpaceship {
     private static int worldWidth = 0;
     private static int worldHeight = 0;
 
-
-    //<editor-fold desc="Gamemodes">
-
-    public static final boolean FIND_THE_MIDDLE = true;
-    public static final boolean DEATHMATCH = false;
-
-    //</editor-fold>
+    //Current game mode
+    private static Gamemodes gamemodes = Gamemodes.DEATHMATCH;
 
 
     public static void main(String[] args) {
@@ -65,14 +60,14 @@ public class Ship extends BasicSpaceship {
 			}
 		}
 
-		if (FIND_THE_MIDDLE) {
-		   return FindTheMiddleCommand.getNextCommand(basicEnvironment);
+        switch (gamemodes) {
+            case FIND_THE_MIDDLE:
+                return FindTheMiddleCommand.getNextCommand(basicEnvironment);
+            case DEATHMATCH:
+                return DeathmatchCommand.attackShip(basicEnvironment, true);
+            default:
+                return new IdleCommand(0.1);
         }
-        else if (DEATHMATCH) {
-            return DeathmatchCommand.attackShip(basicEnvironment, true);
-        }
-
-        return new IdleCommand(0.1);
 	}
 
 
@@ -127,3 +122,5 @@ public class Ship extends BasicSpaceship {
     //</editor-fold>
 
 }
+
+

@@ -68,14 +68,14 @@ public class DeathmatchCommand {
      * @return
      */
     private static ShipCommand advancedAttackShip(ObjectStatus ship, ObjectStatus target) {
-        Point intercept = finalPosition(ship, target);
+        double angle = optimalAngle(ship, target);
 
-        int relativeAngle = ship.getPosition().getAngleTo(intercept) - ship.getOrientation();
+        double relativeAngle = angle - ship.getOrientation();
 
         if (Math.abs(relativeAngle) - ANGLE_TOLERANCE < 0) {
             return new FireTorpedoCommand('F');
         } else {
-            return new RotateCommand(relativeAngle);
+            return new RotateCommand((int)relativeAngle);
         }
     }
 
@@ -95,40 +95,43 @@ public class DeathmatchCommand {
         return new Point(futureX, futureY);
     }
 
-    private static Point finalPosition(ObjectStatus ship, ObjectStatus target) {
 
-        //FIX TO RELATIVE ORIGIN
-        //Get the displacement vector from the ship to the target. WARNING : the y coordinate axis is different!
-        //We will deal with it by ignoring it for now, but consider the relative origin.
-        Vector2D displacement = new Vector2D(ship.getPosition(), target.getPosition());
+    //NEEDS TWEAKING ON RELATIVITY
+    private static double optimalAngle(ObjectStatus ship, ObjectStatus target) {
+        double time = calculateTime(ship, target);
 
         Vector2D targetVelocity = new Vector2D(target.getSpeed() * Math.cos(Math.toRadians(target.getMovementDirection())),
                 target.getSpeed() * Math.sin(Math.toRadians(target.getMovementDirection())));
 
-        //FIX TO RELATIVE ORIGIN
-        Vector2D targetDisplacement = new Vector2D(target.getPosition(),
-                Vector2D.scale(targetVelocity, calculateTime(ship, target)).toPoint());
+        Vector2D targetInitialPositon = new Vector2D(target.getPosition());
 
-        //<editor-fold desc="End result notes">
-        /**
-         * End result will be
-         * World space translation of :
-         *      Vector sum of :
-         *          Displacement of ship to target + Displacement of ship's initial position to final position.
-         */
-        //</editor-fold>
-        return Vector2D.add(displacement, targetDisplacement).toPoint();
+        Vector2D torpedoVelocity = Vector2D.add(Vector2D.scale(targetInitialPositon, 1/time), targetVelocity);
 
+        return Math.toDegrees(torpedoVelocity.getRadianAngle());
     }
 
-    //NEEDS FIXING
+    //NEEDS TWEAKING ON RELATIVTY
     private static double calculateTime(ObjectStatus ship, ObjectStatus target) {
-        Vector2D targetInitialPosition = new Vector2D(target.getPosition());
-        Vector2D torpedoVelocity = null;
+        Vector2D targetInitialPositon = new Vector2D(target.getPosition());
+
         Vector2D targetVelocity = new Vector2D(target.getSpeed() * Math.cos(Math.toRadians(target.getMovementDirection())),
                 target.getSpeed() * Math.sin(Math.toRadians(target.getMovementDirection())));
 
-        return 0;
+        //Quadratic formula process :
+
+        //Equivalent to the dot product of targetVelocity amongst iteself (then squared),  minus
+        // the dot product of the torpedo's speed amongst iteself (then squared).
+        double aValue = (Math.pow(target.getSpeed(), 2) - Math.pow(TORPEDO_SPEED, 2));
+
+        //Self explanatory
+        double bValue = 2*Vector2D.dotProduct(targetInitialPositon, targetVelocity);
+
+        //Dot product of itself is equivalent
+        double cValue = Math.pow(targetInitialPositon.magnitude(), 2);
+
+
+        double discriminant = Math.sqrt(Math.pow(bValue, 2) - (4*aValue*cValue));
+        return -(bValue + discriminant) / (2*aValue);
     }
 
     //</editor-fold>
