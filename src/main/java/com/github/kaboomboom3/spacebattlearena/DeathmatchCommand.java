@@ -14,8 +14,7 @@ public class DeathmatchCommand {
 
     public static final double TORPEDO_SPEED = 250;
     public static final double ANGLE_TOLERANCE = 5;
-
-
+    public static final double ANGULAR_VELOCITY = 114;
 
     //<editor-fold desc="Ship commands">
 
@@ -68,14 +67,17 @@ public class DeathmatchCommand {
      * @return
      */
     private static ShipCommand advancedAttackShip(ObjectStatus ship, ObjectStatus target) {
-        double angle = optimalAngle(ship, target);
+        Point interceptPoint = advancedFinalPosition(ship, target);
 
-        double relativeAngle = angle - ship.getOrientation();
+        System.out.printf("Target location %s \t Interception %s\n ", target.getPosition(), interceptPoint);
 
-        if (Math.abs(relativeAngle) - ANGLE_TOLERANCE < 0) {
+
+        double angleDifference = ship.getPosition().getAngleTo(interceptPoint) - ship.getOrientation();
+
+        if (Math.abs(angleDifference) - ANGLE_TOLERANCE < 0) {
             return new FireTorpedoCommand('F');
         } else {
-            return new RotateCommand((int)relativeAngle);
+            return new RotateCommand((int)Math.round(angleDifference));
         }
     }
 
@@ -95,24 +97,25 @@ public class DeathmatchCommand {
         return new Point(futureX, futureY);
     }
 
-
-    //NEEDS TWEAKING ON RELATIVITY
-    private static double optimalAngle(ObjectStatus ship, ObjectStatus target) {
-        double time = calculateTime(ship, target);
-
+    private static Point advancedFinalPosition(ObjectStatus ship, ObjectStatus target) {
+        double translationalTime = calculateTranslationalTime(ship, target);
+        //Target's velocity
         Vector2D targetVelocity = new Vector2D(target.getSpeed() * Math.cos(Math.toRadians(target.getMovementDirection())),
                 target.getSpeed() * Math.sin(Math.toRadians(target.getMovementDirection())));
 
-        Vector2D targetInitialPositon = new Vector2D(target.getPosition());
+        //Get the final position such that we can rotate instantly
+        Point almostFinalPosition = Vector2D.add(new Vector2D(target.getPosition()), Vector2D.scale(targetVelocity, translationalTime)).toPoint();
+        double angularDisplacement = ship.getPosition().getAngleTo(almostFinalPosition) - ship.getOrientation();
+        double angularTime = angularDisplacement / ANGULAR_VELOCITY;
+        double finalTime = translationalTime + angularTime;
 
-        Vector2D torpedoVelocity = Vector2D.add(Vector2D.scale(targetInitialPositon, 1/time), targetVelocity);
+        //Now return the final position with account for angular motion
+        return Vector2D.add(new Vector2D(target.getPosition()), Vector2D.scale(targetVelocity, finalTime)).toPoint();
 
-        return Math.toDegrees(torpedoVelocity.getRadianAngle());
     }
 
-    //NEEDS TWEAKING ON RELATIVTY
-    private static double calculateTime(ObjectStatus ship, ObjectStatus target) {
-        Vector2D targetInitialPositon = new Vector2D(target.getPosition());
+    private static double calculateTranslationalTime(ObjectStatus ship, ObjectStatus target) {
+        Vector2D targetInitialPosition = new Vector2D(target.getPosition());
 
         Vector2D targetVelocity = new Vector2D(target.getSpeed() * Math.cos(Math.toRadians(target.getMovementDirection())),
                 target.getSpeed() * Math.sin(Math.toRadians(target.getMovementDirection())));
@@ -124,14 +127,14 @@ public class DeathmatchCommand {
         double aValue = (Math.pow(target.getSpeed(), 2) - Math.pow(TORPEDO_SPEED, 2));
 
         //Self explanatory
-        double bValue = 2*Vector2D.dotProduct(targetInitialPositon, targetVelocity);
+        double bValue = 2*Vector2D.dotProduct(targetInitialPosition, targetVelocity);
 
         //Dot product of itself is equivalent
-        double cValue = Math.pow(targetInitialPositon.magnitude(), 2);
+        double cValue = Math.pow(targetInitialPosition.magnitude(), 2);
 
 
         double discriminant = Math.sqrt(Math.pow(bValue, 2) - (4*aValue*cValue));
-        return -(bValue + discriminant) / (2*aValue);
+        return (-(bValue + discriminant) / (2*aValue));
     }
 
     //</editor-fold>

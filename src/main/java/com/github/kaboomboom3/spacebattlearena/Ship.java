@@ -22,7 +22,7 @@ public class Ship extends BasicSpaceship {
 
 
     public static void main(String[] args) {
-		TextClient.run("10.51.4.70", new Ship());
+		TextClient.run("localhost", new Ship());
 	}
 
 
@@ -64,7 +64,7 @@ public class Ship extends BasicSpaceship {
             case FIND_THE_MIDDLE:
                 return FindTheMiddleCommand.getNextCommand(basicEnvironment);
             case DEATHMATCH:
-                return DeathmatchCommand.attackShip(basicEnvironment, true);
+                return DeathmatchCommand.attackShip(basicEnvironment, false);
             default:
                 return new IdleCommand(0.1);
         }
@@ -83,11 +83,11 @@ public class Ship extends BasicSpaceship {
      */
 	public ShipCommand repairShip(ObjectStatus ship) {
 	    if(ship.getHealth() < 10) {
-            System.out.println("Repairing ship...");
+            //System.out.println("Repairing ship...");
             return new RepairCommand(50);
         }
         else if(ship.getHealth() < 50) {
-            System.out.println("WARNING: SHIP HEALTH IS BELOW 50%");
+            //System.out.println("WARNING: SHIP HEALTH IS BELOW 50%");
             return null;
         }
         else {
