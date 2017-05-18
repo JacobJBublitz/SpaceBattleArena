@@ -21,8 +21,17 @@ public class TestShip extends BasicSpaceship {
 	public long endTime = 0;
 	public int angularDisplacement = 0;
 
+	private static int id = 0;
+
 	public static void main(String[] args) {
-		TextClient.run("localhost", new TestShip());
+		for (int i = 0; i < 5; i++) {
+			new Thread(() -> TextClient.run("localhost", new TestShip())).start();
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 
@@ -30,7 +39,7 @@ public class TestShip extends BasicSpaceship {
 
 	@Override
 	public RegistrationData registerShip(int i, int i1, int i2) {
-		return new RegistrationData("Test Ship", new Color(1.0f, 1.0f, 1.0f), 0);
+		return new RegistrationData("Test Ship " + ++id, new Color(1.0f, 1.0f, 1.0f), 0);
 	}
 
 	@Override
@@ -61,6 +70,7 @@ public class TestShip extends BasicSpaceship {
 		//</editor-fold>
 
 		//<editor-fold desc="Handle movement">
+		System.out.println("Ship speed is " + basicEnvironment.getShipStatus().getSpeed());
 		if(count != 5) {
 			count ++;
 			return new ThrustCommand('B', 1, 1);

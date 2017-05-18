@@ -69,7 +69,7 @@ public class DeathmatchCommand {
     private static ShipCommand advancedAttackShip(ObjectStatus ship, ObjectStatus target) {
         Point interceptPoint = advancedFinalPosition(ship, target);
 
-        System.out.printf("Target location %s \t Interception %s\n ", target.getPosition(), interceptPoint);
+        //System.out.printf("Target location %s \t Interception %s\n ", target.getPosition(), interceptPoint);
 
 
         double angleDifference = ship.getPosition().getAngleTo(interceptPoint) - ship.getOrientation();
@@ -101,7 +101,7 @@ public class DeathmatchCommand {
         double translationalTime = calculateTranslationalTime(ship, target);
         //Target's velocity
         Vector2D targetVelocity = new Vector2D(target.getSpeed() * Math.cos(Math.toRadians(target.getMovementDirection())),
-                target.getSpeed() * Math.sin(Math.toRadians(target.getMovementDirection())));
+                -target.getSpeed() * Math.sin(Math.toRadians(target.getMovementDirection())));
 
         //Get the final position such that we can rotate instantly
         Point almostFinalPosition = Vector2D.add(new Vector2D(target.getPosition()), Vector2D.scale(targetVelocity, translationalTime)).toPoint();
@@ -118,7 +118,7 @@ public class DeathmatchCommand {
         Vector2D targetInitialPosition = new Vector2D(target.getPosition());
 
         Vector2D targetVelocity = new Vector2D(target.getSpeed() * Math.cos(Math.toRadians(target.getMovementDirection())),
-                target.getSpeed() * Math.sin(Math.toRadians(target.getMovementDirection())));
+                -target.getSpeed() * Math.sin(Math.toRadians(target.getMovementDirection())));
 
         //Quadratic formula process :
 
@@ -134,7 +134,7 @@ public class DeathmatchCommand {
 
 
         double discriminant = Math.sqrt(Math.pow(bValue, 2) - (4*aValue*cValue));
-        return (-(bValue + discriminant) / (2*aValue));
+        return -(bValue + discriminant) / (2*aValue);
     }
 
     //</editor-fold>
