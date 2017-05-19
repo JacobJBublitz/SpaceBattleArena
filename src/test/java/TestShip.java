@@ -1,11 +1,8 @@
-import com.github.kaboomboom3.spacebattlearena.Vector2D;
-
 import ihs.apcs.spacebattle.*;
 import ihs.apcs.spacebattle.Point;
 import ihs.apcs.spacebattle.commands.*;
 
 import java.awt.*;
-import java.util.*;
 
 /**
  * This ship is purely for example.
@@ -13,93 +10,127 @@ import java.util.*;
  */
 public class TestShip extends BasicSpaceship {
 
-	public int count = 0;
+    //Thrust incrementer
+    private int speedIncrementCounter = 0;
 
 
-	public Point origin = new Point(0,0);
-	public long startTime = 0;
-	public long endTime = 0;
-	public int angularDisplacement = 0;
+    //<editor-fold desc="Experimental test variables">
 
-	private static int id = 0;
+    //elapsed time calculations
+    private long startTime = 0;
+    private long endTime = 0;
+    private boolean done = false;
 
-	public static void main(String[] args) {
-		for (int i = 0; i < 5; i++) {
-			new Thread(() -> TextClient.run("localhost", new TestShip())).start();
-			try {
-				Thread.sleep(100);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-	}
+    //Origin (top-left of window)
+    private Point origin = new Point(0, 0);
 
 
-	//<editor-fold desc="Main ship operations">
+    //Angular motion variables
+    private int angularDisplacement = 0;
 
-	@Override
-	public RegistrationData registerShip(int i, int i1, int i2) {
-		return new RegistrationData("Test Ship " + ++id, new Color(1.0f, 1.0f, 1.0f), 0);
-	}
-
-	@Override
-	public ShipCommand getNextCommand(BasicEnvironment basicEnvironment) {
-		ObjectStatus ship = basicEnvironment.getShipStatus();
-
-		//<editor-fold desc="Angular displacement vs time test">
-//		if(ship.getPosition().getAngleTo(origin) - ship.getOrientation() != 0) {
-//			angularDisplacement = ship.getPosition().getAngleTo(origin) - ship.getOrientation();
-//			System.out.println("Angular displacement is " + angularDisplacement);
-//			startTime = System.currentTimeMillis();
-//			return new RotateCommand(angularDisplacement);
-//		}
-//		else
-//		{
-//			count++;
-//
-//			if(count <= 1) {
-//				endTime = System.currentTimeMillis();
-//				System.out.println("Elapsed time was : " + (endTime - startTime));
-//				return new IdleCommand(1);
-//			}
-//			else
-//			{
-//				return new IdleCommand(1);
-//			}
-//		}
-		//</editor-fold>
-
-		//<editor-fold desc="Handle movement">
-		System.out.println("Ship speed is " + basicEnvironment.getShipStatus().getSpeed());
-		if(count != 5) {
-			count ++;
-			return new ThrustCommand('B', 1, 1);
-		}
-		else {
-			return new RotateCommand(5);
-		}
-		//</editor-fold>
-	}
-
-	//</editor-fold>
+    //</editor-fold>
 
 
-	//<editor-fold desc="Information logging">
+    //<editor-fold desc="Ship spawning variables">
 
-	private void logInfo(BasicEnvironment environ, RadarResults results) {
-		System.out.println("Our position is currently" + environ.getShipStatus().getPosition());
-		System.out.println();
-		try {
-			Thread.sleep(500);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-	}
+    //Ship ID for multiple spawning ships
+    private static int id = 0;
 
-	//</editor-fold>
+    //Ship speedIncrementCounter for amount of test ships spawned.
+    private static int numberOfShips = 5;
+
+    //</editor-fold>
 
 
+    public static void main(String[] args) {
+        for (int i = 0; i < numberOfShips; i++) {
+            new Thread(() -> TextClient.run("localhost", new TestShip())).start();
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
+
+    //<editor-fold desc="Main ship operations">
+
+    @Override
+    public RegistrationData registerShip(int i, int i1, int i2) {
+        return new RegistrationData("Test Ship " + ++id, new Color(1.0f, 1.0f, 1.0f), 0);
+    }
+
+    @Override
+    public ShipCommand getNextCommand(BasicEnvironment basicEnvironment) {
+        ObjectStatus ship = basicEnvironment.getShipStatus();
+
+        //Angular displacement vs time test
+        //return collectAngularMotionData(basicEnvironment);
+
+        //Movement handling
+        return moveToConstantSpeed(basicEnvironment, 5);
+
+    }
+
+    //</editor-fold>
+
+
+    //<editor-fold desc="Experimental ship commands">
+
+    /**
+     * Makes the test ship thurst a given amount of times.
+     * @param basicEnvironment The basic environment.
+     * @param thrustIterationLimit The amount of times to thrust.
+     * @return A new thurst command if the thrustIterationLimit hasn't been met. Otherwise, returns a new Idle command.
+     */
+    private ShipCommand moveToConstantSpeed(BasicEnvironment basicEnvironment, int thrustIterationLimit) {
+        ObjectStatus ship = basicEnvironment.getShipStatus();
+
+        if (speedIncrementCounter != thrustIterationLimit) {
+            speedIncrementCounter++;
+            return new ThrustCommand('B', 1, 1);
+        } else {
+            return new RotateCommand(5);
+        }
+    }
+
+    //</editor-fold>
+
+
+    //<editor-fold desc="Information logging">
+
+    private void logInfo(BasicEnvironment basicEnvironment, RadarResults results) {
+        System.out.println("Our position is currently" + basicEnvironment.getShipStatus().getPosition());
+        System.out.println();
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private ShipCommand collectAngularMotionData(BasicEnvironment basicEnvironment) {
+        ObjectStatus ship = basicEnvironment.getShipStatus();
+
+        if (ship.getPosition().getAngleTo(origin) - ship.getOrientation() != 0) {
+            angularDisplacement = ship.getPosition().getAngleTo(origin) - ship.getOrientation();
+            System.out.println("Angular displacement is " + angularDisplacement);
+            startTime = System.currentTimeMillis();
+            return new RotateCommand(angularDisplacement);
+        } else {
+            if (!done) {
+                done = true;
+                endTime = System.currentTimeMillis();
+                System.out.println("Elapsed time was : " + (endTime - startTime));
+                return new IdleCommand(1);
+            } else {
+                return new IdleCommand(1);
+            }
+        }
+
+    }
+    //</editor-fold>
 
 
 }
