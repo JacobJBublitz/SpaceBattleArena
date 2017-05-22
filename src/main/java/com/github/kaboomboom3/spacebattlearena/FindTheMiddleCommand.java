@@ -10,7 +10,7 @@ import ihs.apcs.spacebattle.commands.*;
  */
 public class FindTheMiddleCommand {
 
-    private static double BREAKING_DISTANCE = 250;
+    private static double BREAKING_DISTANCE = 75;
 
     public static ShipCommand getNextCommand(BasicEnvironment environment) {
         ObjectStatus ourShip = environment.getShipStatus();
@@ -18,11 +18,11 @@ public class FindTheMiddleCommand {
         Point middlePos = new Point(Ship.getWorldWidth() / 2.0, Ship.getWorldHeight() / 2.0);
 
         int angleToMiddle = ourShip.getPosition().getAngleTo(middlePos);
-        if (angleToMiddle - ourShip.getOrientation() != 0) {
+        double distanceToMiddle = ourShip.getPosition().getDistanceTo(middlePos);
+
+        if (angleToMiddle - ourShip.getOrientation() != 0 && distanceToMiddle <= BREAKING_DISTANCE) {
             return new RotateCommand(angleToMiddle - ourShip.getOrientation());
         } else {
-            double distanceToMiddle = ourShip.getPosition().getDistanceTo(middlePos);
-
             Vector2D velocity = new Vector2D(ourShip.getSpeed() * Math.cos(Math.toRadians(ourShip.getOrientation() - ourShip.getMovementDirection())),
                     ourShip.getSpeed() * Math.sin(Math.toRadians(ourShip.getOrientation() - ourShip.getMovementDirection())));
 

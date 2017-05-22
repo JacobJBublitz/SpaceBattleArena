@@ -37,14 +37,14 @@ public class TestShip extends BasicSpaceship {
     private static int id = 0;
 
     //Ship speedIncrementCounter for amount of test ships spawned.
-    private static int numberOfShips = 5;
+    private static int numberOfShips = 3;
 
     //</editor-fold>
 
 
     public static void main(String[] args) {
         for (int i = 0; i < numberOfShips; i++) {
-            new Thread(() -> TextClient.run("localhost", new TestShip())).start();
+            new Thread(() -> TextClient.run("10.51.4.70", new TestShip())).start();
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
@@ -58,7 +58,7 @@ public class TestShip extends BasicSpaceship {
 
     @Override
     public RegistrationData registerShip(int i, int i1, int i2) {
-        return new RegistrationData("Test Ship " + ++id, new Color(1.0f, 1.0f, 1.0f), 0);
+        return new RegistrationData("PUTIN'S SIDEKICKS #" + ++id, new Color(1.0f, 0.0f, 0.0f), 3);
     }
 
     @Override

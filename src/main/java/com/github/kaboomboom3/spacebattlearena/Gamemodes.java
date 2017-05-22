@@ -7,4 +7,5 @@ package com.github.kaboomboom3.spacebattlearena;
 public enum Gamemodes {
     DEATHMATCH,
     FIND_THE_MIDDLE,
+    BAUBLE,
 }

@@ -18,11 +18,11 @@ public class Ship extends BasicSpaceship {
     private static int worldHeight = 0;
 
     //Current game mode
-    private static Gamemodes gamemodes = Gamemodes.DEATHMATCH;
+    private static Gamemodes gamemodes = Gamemodes.BAUBLE;
 
 
     public static void main(String[] args) {
-		TextClient.run("localhost", new Ship());
+		TextClient.run("10.51.4.70", new Ship());
 	}
 
 
@@ -65,6 +65,8 @@ public class Ship extends BasicSpaceship {
                 return FindTheMiddleCommand.getNextCommand(basicEnvironment);
             case DEATHMATCH:
                 return DeathmatchCommand.attackShip(basicEnvironment, false);
+            case BAUBLE:
+                return BaubleCommand.baubleCommand(basicEnvironment);
             default:
                 return new IdleCommand(0.1);
         }
