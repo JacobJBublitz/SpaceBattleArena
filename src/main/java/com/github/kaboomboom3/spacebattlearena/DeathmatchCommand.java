@@ -35,9 +35,10 @@ public class DeathmatchCommand {
         } else {
             if (radarResults.getByType("Ship").size() > 0) {
                 ObjectStatus closestEnemy = getClosestObject(ship, radarResults.getByType("Ship"));
-                ShipCommand attackCommand = (simpleAttack) ? easyAttackShip(ship, closestEnemy) : advancedAttackShip(ship, closestEnemy);
-                return (attackCommand != null) ? attackCommand : new IdleCommand(0.1);
-
+                if (closestEnemy != null) {
+                    ShipCommand attackCommand = (simpleAttack) ? easyAttackShip(ship, closestEnemy) : advancedAttackShip(ship, closestEnemy);
+                    return (attackCommand != null) ? attackCommand : new IdleCommand(0.1);
+                }
             }
         }
         return new IdleCommand(0.1);
@@ -164,14 +165,21 @@ public class DeathmatchCommand {
             return null;
         }
 
-        ObjectStatus lastClosestObject = enemyShipList.get(0);
+        ObjectStatus lastClosestObject = null;
 
         for (ObjectStatus currentObject : enemyShipList) {
-            double lastDistance = ship.getPosition().getDistanceTo(lastClosestObject.getPosition());
-            double currentObjectsDistance = ship.getPosition().getDistanceTo(currentObject.getPosition());
+            if (currentObject.getName().equals(Ship.NAME)) continue;
+            if (currentObject.getName().contains("KGB OFFICER")) continue;
 
-            if (currentObjectsDistance < lastDistance) {
+            if (lastClosestObject == null) {
                 lastClosestObject = currentObject;
+            } else {
+                double lastDistance = ship.getPosition().getDistanceTo(lastClosestObject.getPosition());
+                double currentObjectsDistance = ship.getPosition().getDistanceTo(currentObject.getPosition());
+
+                if (currentObjectsDistance < lastDistance) {
+                    lastClosestObject = currentObject;
+                }
             }
         }
 

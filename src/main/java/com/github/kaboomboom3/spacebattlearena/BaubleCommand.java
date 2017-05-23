@@ -14,6 +14,7 @@ import java.util.List;
 public class BaubleCommand {
 
     private static final int ANGLE_TOLERANCE = 5;
+    private static final int DISTANCE_TOLERANCE = 5;
 
     public static ShipCommand baubleCommand(BasicEnvironment basicEnvironment) {
         ObjectStatus ship = basicEnvironment.getShipStatus();
@@ -23,11 +24,9 @@ public class BaubleCommand {
             return new RadarCommand(5);
         }
 
-        List<ObjectStatus> baubleList = radarResults.getByType("Bauble");
-        List<ObjectStatus> enemyShips = radarResults.getByType("Ship");
 
-        ObjectStatus closestBauble = getClosestObject(ship, baubleList);
-        ObjectStatus closestEnemy = getClosestObject(ship, enemyShips);
+        ObjectStatus closestBauble = getClosestObject(ship, radarResults.getByType("Bauble"));
+        ObjectStatus closestEnemy = getClosestObject(ship, radarResults.getByType("Ship"));
 
         double distanceToBauble = (closestBauble != null) ? ship.getPosition().getDistanceTo(closestBauble.getPosition())
                 : Double.MAX_VALUE;
@@ -44,6 +43,7 @@ public class BaubleCommand {
         }
 
     }
+
 
     //<editor-fold desc="Navigation assistance">
 
@@ -81,16 +81,27 @@ public class BaubleCommand {
      * @return Commands.
      */
     private static ShipCommand gotoPoint(ObjectStatus ship, Point point) {
-        if (ship.getPosition().getDistanceTo(point) <= 5) {
+        if (ship.getPosition().getDistanceTo(point) < DISTANCE_TOLERANCE) {
             return null;
         }
 
         int angleDifference = ship.getPosition().getAngleTo(point) - ship.getOrientation();
 
+        Vector2D velocity = new Vector2D(ship.getSpeed() * Math.cos(Math.toRadians(ship.getOrientation() - ship.getMovementDirection())),
+                ship.getSpeed() * Math.sin(Math.toRadians(ship.getOrientation() - ship.getMovementDirection())));
+
+        System.out.println("Velocity is " + velocity);
+
+        if (velocity.dY > 10.0) {
+            return new ThrustCommand('R', 1, 0.5, false);
+        } else if (velocity.dY < -10.0) {
+            return new ThrustCommand('L', 1, 0.5, false);
+        }
+
         if (Math.abs(angleDifference) - ANGLE_TOLERANCE < 0) {
             return new ThrustCommand('B', 1, 0.5);
         } else {
-            return new RotateCommand((int) Math.floor(angleDifference));
+            return new RotateCommand((int)Math.rint(angleDifference));
         }
     }
 

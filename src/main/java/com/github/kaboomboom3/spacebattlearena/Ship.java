@@ -13,6 +13,8 @@ import java.util.List;
  */
 public class Ship extends BasicSpaceship {
 
+    public static final String NAME = "The Normandy";
+
     //World properties
     private static int worldWidth = 0;
     private static int worldHeight = 0;
@@ -47,7 +49,7 @@ public class Ship extends BasicSpaceship {
         Ship.worldWidth = worldWidth;
         Ship.worldHeight = worldHeight;
 
-		return new RegistrationData("The Normandy", new Color(1.0f, 1.0f, 1.0f), 10);
+		return new RegistrationData(NAME, new Color(1.0f, 1.0f, 1.0f), 10);
 	}
 
 	@Override
