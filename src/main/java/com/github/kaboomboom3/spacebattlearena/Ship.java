@@ -99,6 +99,14 @@ public class Ship extends BasicSpaceship {
         }
     }
 
+    /**
+     * Avoids enemy ship or torpedoes.
+     * @param basicEnvironment The basic environment.
+     * @return
+     */
+    public ShipCommand avoidObject(BasicEnvironment basicEnvironment) {
+        return null;
+    }
     //</editor-fold>
 
 

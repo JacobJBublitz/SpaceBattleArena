@@ -1,16 +1,15 @@
 import com.github.kaboomboom3.spacebattlearena.*;
 import ihs.apcs.spacebattle.*;
-import ihs.apcs.spacebattle.commands.IdleCommand;
-import ihs.apcs.spacebattle.commands.RotateCommand;
-import ihs.apcs.spacebattle.commands.ShipCommand;
-import ihs.apcs.spacebattle.commands.ThrustCommand;
+import ihs.apcs.spacebattle.Point;
+import ihs.apcs.spacebattle.commands.*;
 
 import java.awt.*;
+import java.util.List;
 
 /**
  * Created by nerdares on 5/23/2017.
  */
-public class KGBShip extends BasicSpaceship{
+public class KamikazeShip extends BasicSpaceship{
 
 
     //<editor-fold desc="World properties">
@@ -24,18 +23,20 @@ public class KGBShip extends BasicSpaceship{
 
     private static int speedIncrementCounter;
 
+    private static int ANGLE_TOLERANCE = 5;
+
     private final int id;
 
 
 
-    public KGBShip(int id) {
+    public KamikazeShip(int id) {
         this.id = id;
     }
 
     public static void main(String[] args) {
         for (int i = 0; i < 10; i++) {
             final int id = i;
-            new Thread(() -> TextClient.run("10.51.4.70", new KGBShip(id))).start();
+            new Thread(() -> TextClient.run("10.51.4.70", new KamikazeShip(id))).start();
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
@@ -49,23 +50,22 @@ public class KGBShip extends BasicSpaceship{
 
     @Override
     public RegistrationData registerShip(int numImages, int worldWidth, int worldHeight) {
-        KGBShip.worldWidth = worldWidth;
-        KGBShip.worldHeight = worldHeight;
+        KamikazeShip.worldWidth = worldWidth;
+        KamikazeShip.worldHeight = worldHeight;
 
-        return new RegistrationData("KGB OFFICER #" + id, new Color(1.0f, 0.0f, 0.0f), 3);
+        return new RegistrationData("THE RED ARMY #" + id, new Color(1.0f, 0.0f, 0.0f), 3);
     }
+
+    private boolean placeMine = false;
 
     @Override
     public ShipCommand getNextCommand(BasicEnvironment basicEnvironment) {
-        switch (gamemodes) {
-            case FIND_THE_MIDDLE:
-                return FindTheMiddleCommand.getNextCommand(basicEnvironment);
-            case DEATHMATCH:
-                return DeathmatchCommand.attackShip(basicEnvironment, false);
-            case BAUBLE:
-                return BaubleCommand.baubleCommand(basicEnvironment);
-            default:
-                return new IdleCommand(0.1);
+        placeMine = !placeMine;
+
+        if (placeMine) {
+            return new DeploySpaceMineCommand(1);
+        } else {
+            return new ThrustCommand('B', 1, 1);
         }
     }
 
@@ -91,6 +91,33 @@ public class KGBShip extends BasicSpaceship{
         }
     }
 
+    /**
+     * Makes ship go to point.
+     * @param ship Our ship.
+     * @param point Point to go to.
+     * @return Commands.
+     */
+    private static ShipCommand gotoPoint(ObjectStatus ship, Point point) {
+        int angleDifference = ship.getPosition().getAngleTo(point) - ship.getOrientation();
+
+        Vector2D velocity = new Vector2D(ship.getSpeed() * Math.cos(Math.toRadians(ship.getOrientation() - ship.getMovementDirection())),
+                ship.getSpeed() * Math.sin(Math.toRadians(ship.getOrientation() - ship.getMovementDirection())));
+
+        System.out.println("Velocity is " + velocity);
+
+        if (velocity.dY > 10.0) {
+            return new ThrustCommand('R', 1, 0.5, false);
+        } else if (velocity.dY < -10.0) {
+            return new ThrustCommand('L', 1, 0.5, false);
+        }
+
+        if (Math.abs(angleDifference) - ANGLE_TOLERANCE < 0) {
+            return new ThrustCommand('B', 1, 0.5);
+        } else {
+            return new RotateCommand((int)Math.rint(angleDifference));
+        }
+    }
+
     //</editor-fold>
 
 
@@ -107,4 +134,6 @@ public class KGBShip extends BasicSpaceship{
     }
 
     //</editor-fold>
+
+
 }
