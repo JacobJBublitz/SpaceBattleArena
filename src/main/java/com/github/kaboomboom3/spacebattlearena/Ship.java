@@ -20,11 +20,11 @@ public class Ship extends BasicSpaceship {
     private static int worldHeight = 0;
 
     //Current game mode
-    private static Gamemodes gamemodes = Gamemodes.FIND_THE_MIDDLE;
+    private static Gamemodes gamemodes = Gamemodes.BAUBLE;
 
 
     public static void main(String[] args) {
-		TextClient.run("localhost", new Ship());
+		TextClient.run("10.51.4.70", new Ship());
 	}
 
 
@@ -38,7 +38,7 @@ public class Ship extends BasicSpaceship {
         return worldHeight;
     }
 
-    //</editor-fold>    `
+    //</editor-fold>
 
 
 
